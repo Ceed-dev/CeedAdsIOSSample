@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import CeedAdsSDK
 
 @Observable
 final class ChatViewModel {
@@ -90,9 +91,11 @@ final class ChatViewModel {
 
     /// Initialize the SDK (called on view appear)
     func initializeSDK() {
-        print("⭐ SDK: initialize(appId: \"test-app\")")
-        // TODO(shungo): Replace with actual SDK call
-        // CeedAds.initialize(appId: "test-app")
+        do {
+            try CeedAdsSDK.initialize(appId: "test-app")
+        } catch {
+            print("[CeedAdsIOSSample] SDK initialization failed: \(error)")
+        }
     }
 
     // MARK: - Private Methods
@@ -114,18 +117,22 @@ final class ChatViewModel {
         contextText: String,
         completion: @escaping (ResolvedAd?, String?) -> Void
     ) {
-        print("⭐ SDK: requestAd(conversationId: \"\(conversationId)\", messageId: \"\(messageId)\", contextText: \"\(contextText)\")")
-
-        // TODO(shungo): Replace with actual SDK call
-        // CeedAds.requestAd(
-        //     conversationId: conversationId,
-        //     messageId: messageId,
-        //     contextText: contextText
-        // ) { result in
-        //     completion(result.ad, result.requestId)
-        // }
-
-        // For now: no ads (will be enabled when SDK is integrated)
-        completion(nil, nil)
+        Task {
+            do {
+                let (ad, requestId) = try await CeedAdsSDK.requestAd(
+                    conversationId: conversationId,
+                    messageId: messageId,
+                    contextText: contextText
+                )
+                await MainActor.run {
+                    completion(ad, requestId)
+                }
+            } catch {
+                print("[CeedAdsIOSSample] requestAd failed: \(error)")
+                await MainActor.run {
+                    completion(nil, nil)
+                }
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CeedAdsSDK
 
 enum MessageFactory {
     /// Create a user message

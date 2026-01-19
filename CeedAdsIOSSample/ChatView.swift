@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import CeedAdsSDK
 
 struct ChatView: View {
     // MARK: - Properties
@@ -78,9 +79,9 @@ struct ChatView: View {
             MessageBubbleView(message: message)
         case .ad:
             if let ad = message.ad {
-                AdCardView(ad: ad, requestId: message.requestId)
+                CeedAdsActionCardView(ad: ad, requestId: message.requestId)
+                    .padding(.horizontal)
             } else {
-                // Fallback for ad message with nil ad data
                 EmptyView()
             }
         }

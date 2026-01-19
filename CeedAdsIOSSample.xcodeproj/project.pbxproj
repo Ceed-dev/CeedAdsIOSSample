@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5874B20B2F1DC4BD007B0218 /* CeedAdsSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 5874B20A2F1DC4BD007B0218 /* CeedAdsSDK */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		5823DE6C2F18913D00260BC7 /* CeedAdsIOSSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CeedAdsIOSSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5874B20B2F1DC4BD007B0218 /* CeedAdsSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = CeedAdsIOSSample;
 			packageProductDependencies = (
+				5874B20A2F1DC4BD007B0218 /* CeedAdsSDK */,
 			);
 			productName = CeedAdsIOSSample;
 			productReference = 5823DE6C2F18913D00260BC7 /* CeedAdsIOSSample.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 5823DE632F18913D00260BC7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5874B2092F1DC4BD007B0218 /* XCLocalSwiftPackageReference "../ceed-ads-ios-sdk/CeedAdsSDK" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5823DE6D2F18913D00260BC7 /* Products */;
 			projectDirPath = "";
@@ -328,6 +337,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		5874B2092F1DC4BD007B0218 /* XCLocalSwiftPackageReference "../ceed-ads-ios-sdk/CeedAdsSDK" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../ceed-ads-ios-sdk/CeedAdsSDK";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5874B20A2F1DC4BD007B0218 /* CeedAdsSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CeedAdsSDK;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5823DE642F18913D00260BC7 /* Project object */;
 }

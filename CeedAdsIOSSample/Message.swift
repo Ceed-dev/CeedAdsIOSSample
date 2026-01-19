@@ -4,21 +4,13 @@
 //
 
 import Foundation
+import CeedAdsSDK
 
 /// Represents the role/type of a chat message
 enum MessageRole {
     case user
     case ai
     case ad
-}
-
-/// Placeholder type for ad data (will be replaced with SDK's ResolvedAd)
-struct ResolvedAd {
-    let id: String
-    let title: String
-    let description: String
-    let imageUrl: String?
-    let actionUrl: String
 }
 
 /// Represents a single chat message in the conversation
