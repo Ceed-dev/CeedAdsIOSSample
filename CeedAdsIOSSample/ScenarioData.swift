@@ -8,40 +8,69 @@
 
 import Foundation
 
-/// A single dialogue entry in a scenario (alternating user/ai)
+// MARK: - Data Models
+
+/// A single dialogue entry in a scenario (alternating user/ai messages).
 struct ScenarioMessage {
+    /// The role of who sends this message
     let role: MessageRole
+    /// The message text content
     let text: String
 }
 
-/// Scenario type enumeration
+/// Scenario type enumeration for categorizing demo conversations.
+///
+/// Scenarios are divided into two categories:
+/// - Original scenarios: Test traditional action card ads
+/// - Format test scenarios: Test new ad formats (lead_gen, static, followup)
 enum ScenarioType: String {
-    case english
-    case programming
-    case programmingJa
-    case travel
+    // MARK: Original Scenarios (Action Card)
+    case english          // English learning conversation
+    case programming      // Programming learning (English)
+    case programmingJa    // Programming learning (Japanese)
+    case travel           // Travel planning conversation
+
+    // MARK: Format Test Scenarios
+    case leadGen          // Tests lead generation ads
+    case staticAd         // Tests static display ads
+    case followup         // Tests followup engagement cards
 }
 
-/// Keywords that trigger each scenario
+/// Keywords that trigger a specific scenario.
 struct ScenarioKeyword {
+    /// The scenario type to activate
     let scenario: ScenarioType
+    /// Keywords that trigger this scenario (case-insensitive matching)
     let keywords: [String]
 }
 
-/// Scenario detection keywords
-/// Matches the Web version's scenarioKeywords
+// MARK: - Scenario Detection
+
+/// Scenario detection keywords.
+///
+/// When user input contains any of these keywords, the corresponding
+/// scenario is activated. Matching is case-insensitive.
 let scenarioDetectionKeywords: [ScenarioKeyword] = [
+    // Original scenarios
     ScenarioKeyword(scenario: .english, keywords: ["communicating", "another", "language"]),
     ScenarioKeyword(scenario: .programming, keywords: ["tech"]),
     ScenarioKeyword(scenario: .travel, keywords: ["off", "places", "refreshing"]),
+
+    // Format test scenarios
+    ScenarioKeyword(scenario: .leadGen, keywords: ["newsletter", "subscribe", "updates"]),
+    ScenarioKeyword(scenario: .staticAd, keywords: ["event", "promotion", "deal"]),
+    ScenarioKeyword(scenario: .followup, keywords: ["feedback", "survey", "opinion"]),
 ]
 
-// ============================================================================
-// English Learning Scenario
-// ============================================================================
-// The final user message includes keywords such as "AI", "English", and
-// "conversation" to trigger ad matching.
+// MARK: - Original Scenarios
 
+// MARK: English Learning Scenario
+
+/// English learning conversation scenario.
+///
+/// - Trigger: Keywords like "communicating", "another", "language"
+/// - Ad Context: Final message asks about "AI English conversation app"
+/// - Expected Ad: Language learning app recommendations
 let englishScenario: [ScenarioMessage] = [
     ScenarioMessage(role: .user, text: "I want to get better at communicating in another language. Where should I begin?"),
     ScenarioMessage(role: .ai, text: "A good start is to build daily speaking habits. Even short self-talk or reading aloud helps."),
@@ -55,12 +84,13 @@ let englishScenario: [ScenarioMessage] = [
     ScenarioMessage(role: .ai, text: "There are several options. Let me check what might suit your learning style."),
 ]
 
-// ============================================================================
-// Programming Learning Scenario (English)
-// ============================================================================
-// The final user message includes keywords such as "AI", "coding", and
-// "course" to trigger ad matching.
+// MARK: Programming Learning Scenario (English)
 
+/// Programming learning conversation scenario (English version).
+///
+/// - Trigger: Keyword "tech"
+/// - Ad Context: Final message asks about "AI coding course"
+/// - Expected Ad: Coding course recommendations
 let programmingScenario: [ScenarioMessage] = [
     ScenarioMessage(role: .user, text: "I'm thinking about getting into tech, but I'm not sure where to start. Any suggestions?"),
     ScenarioMessage(role: .ai, text: "A good entry point is understanding basic problem-solving and logic. Many beginners start with simple tasks to build confidence."),
@@ -74,12 +104,13 @@ let programmingScenario: [ScenarioMessage] = [
     ScenarioMessage(role: .ai, text: "There are a few options depending on your learning style. Let me take a look."),
 ]
 
-// ============================================================================
-// Programming Learning Scenario (Japanese)
-// ============================================================================
-// The final user message includes keywords such as "AI", "coding", and
-// "course" to trigger ad matching.
+// MARK: Programming Learning Scenario (Japanese)
 
+/// Programming learning conversation scenario (Japanese version).
+///
+/// - Trigger: Default fallback when no English keywords match
+/// - Ad Context: Final message asks about "AIコーディングコース"
+/// - Expected Ad: Japanese coding course recommendations
 let programmingScenarioJa: [ScenarioMessage] = [
     ScenarioMessage(role: .user, text: "テック業界に興味があるのですが、どこから始めればいいのか分かりません。何かアドバイスはありますか？"),
     ScenarioMessage(role: .ai, text: "まずは基本的な問題解決力やロジックを理解することが良い入口になります。多くの初心者は、簡単な課題から始めて自信をつけています。"),
@@ -93,12 +124,13 @@ let programmingScenarioJa: [ScenarioMessage] = [
     ScenarioMessage(role: .ai, text: "学習スタイルによっていくつか選択肢があります。少し調べてみますね。"),
 ]
 
-// ============================================================================
-// Travel Planning Scenario
-// ============================================================================
-// The final user message includes keywords such as "nice" and "hotel"
-// to trigger ad matching.
+// MARK: Travel Planning Scenario
 
+/// Travel planning conversation scenario.
+///
+/// - Trigger: Keywords like "off", "places", "refreshing"
+/// - Ad Context: Final message asks about "nice hotel"
+/// - Expected Ad: Hotel and travel service recommendations
 let travelScenario: [ScenarioMessage] = [
     ScenarioMessage(role: .user, text: "I'm thinking about taking some time off soon. Any ideas for places that might be refreshing?"),
     ScenarioMessage(role: .ai, text: "It depends on the atmosphere you enjoy. Do you prefer quiet places, lively areas, or somewhere close to nature?"),
@@ -112,11 +144,76 @@ let travelScenario: [ScenarioMessage] = [
     ScenarioMessage(role: .ai, text: "There are several options depending on your budget and style. Let me check what might be a good fit."),
 ]
 
-/// Lookup table for scenarios
+// MARK: - Format Test Scenarios
+
+// MARK: Lead Generation Scenario
+
+/// Lead generation ad format test scenario.
+///
+/// - Trigger: Keywords "newsletter", "subscribe", "updates"
+/// - Ad Format: `lead_gen` (email capture form)
+/// - Events Tested: impression, submit
+let leadGenScenario: [ScenarioMessage] = [
+    ScenarioMessage(role: .user, text: "I'd like to stay updated on the latest newsletter and industry trends."),
+    ScenarioMessage(role: .ai, text: "That's great! Staying informed helps you make better decisions. Are you interested in any specific topics?"),
+    ScenarioMessage(role: .user, text: "Mainly technology and business innovations."),
+    ScenarioMessage(role: .ai, text: "Those are popular topics. Many professionals find curated newsletters save time compared to browsing multiple sources."),
+    ScenarioMessage(role: .user, text: "Exactly. I don't have time to check every website."),
+    ScenarioMessage(role: .ai, text: "Understandable. A good newsletter delivers key insights directly to your inbox."),
+    ScenarioMessage(role: .user, text: "Can you recommend a way to subscribe to quality updates?"),
+    ScenarioMessage(role: .ai, text: "Let me find some options for you."),
+]
+
+// MARK: Static Ad Scenario
+
+/// Static ad format test scenario.
+///
+/// - Trigger: Keywords "event", "promotion", "deal"
+/// - Ad Format: `static` (banner-style display)
+/// - Events Tested: impression, click
+let staticAdScenario: [ScenarioMessage] = [
+    ScenarioMessage(role: .user, text: "I heard there's a big event coming up. Any promotion or deal I should know about?"),
+    ScenarioMessage(role: .ai, text: "There are always interesting events and promotions happening. What kind of event are you looking for?"),
+    ScenarioMessage(role: .user, text: "Something related to tech or startups would be great."),
+    ScenarioMessage(role: .ai, text: "Tech conferences and startup events are popular this time of year. They often have early-bird discounts."),
+    ScenarioMessage(role: .user, text: "That sounds interesting. Are there any online events too?"),
+    ScenarioMessage(role: .ai, text: "Yes, many events now offer hybrid formats. You can attend virtually if the venue is too far."),
+    ScenarioMessage(role: .user, text: "Perfect. Can you show me what's available?"),
+    ScenarioMessage(role: .ai, text: "Let me check the current promotions for you."),
+]
+
+// MARK: Followup Engagement Scenario
+
+/// Followup engagement ad format test scenario.
+///
+/// - Trigger: Keywords "feedback", "survey", "opinion"
+/// - Ad Format: `followup` (selectable options card)
+/// - Events Tested: impression, optionTap
+let followupScenario: [ScenarioMessage] = [
+    ScenarioMessage(role: .user, text: "I'd like to share my feedback about a product I recently used."),
+    ScenarioMessage(role: .ai, text: "That's helpful! Feedback helps companies improve their products. What kind of product was it?"),
+    ScenarioMessage(role: .user, text: "It was a productivity app. I have some opinions about its features."),
+    ScenarioMessage(role: .ai, text: "Productivity apps benefit greatly from user feedback. Was it generally positive or did you find issues?"),
+    ScenarioMessage(role: .user, text: "Mixed. Some features are great, but others need improvement."),
+    ScenarioMessage(role: .ai, text: "That's valuable insight. Detailed feedback like yours helps prioritize development."),
+    ScenarioMessage(role: .user, text: "Is there a survey or way to submit my opinion officially?"),
+    ScenarioMessage(role: .ai, text: "Let me find an appropriate feedback channel for you."),
+]
+
+// MARK: - Scenario Lookup Table
+
+/// Lookup table mapping scenario types to their message sequences.
+///
+/// Use this table to retrieve the conversation flow for any scenario type.
 let scenarioTable: [ScenarioType: [ScenarioMessage]] = [
+    // Original scenarios
     .english: englishScenario,
     .programming: programmingScenario,
     .programmingJa: programmingScenarioJa,
     .travel: travelScenario,
-]
 
+    // Format test scenarios
+    .leadGen: leadGenScenario,
+    .staticAd: staticAdScenario,
+    .followup: followupScenario,
+]

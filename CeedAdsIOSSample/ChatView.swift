@@ -9,9 +9,20 @@
 import SwiftUI
 import CeedAdsSDK
 
+// MARK: - ChatView
+
+/// The main chat interface view that displays conversation messages and ads.
+///
+/// This view provides:
+/// - A scrollable list of chat messages (user, AI, and ads)
+/// - A text input bar for sending messages
+/// - Automatic scrolling to the latest message
+/// - Integration with CeedAdsSDK for displaying contextual ads
 struct ChatView: View {
+
     // MARK: - Properties
 
+    /// ViewModel that manages chat state and business logic
     @State private var viewModel = ChatViewModel()
 
     // MARK: - Body
@@ -26,9 +37,7 @@ struct ChatView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: viewModel.clearChat) {
-                    Image(systemName: "arrow.counterclockwise")
-                }
+                clearButton
             }
         }
         .onAppear {
@@ -36,8 +45,18 @@ struct ChatView: View {
         }
     }
 
-    // MARK: - Subviews
+    // MARK: - Toolbar Items
 
+    /// Button to clear the chat history
+    private var clearButton: some View {
+        Button(action: viewModel.clearChat) {
+            Image(systemName: "arrow.counterclockwise")
+        }
+    }
+
+    // MARK: - Message List
+
+    /// Scrollable list of all chat messages
     private var messageList: some View {
         ScrollViewReader { proxy in
             ScrollView {
@@ -66,49 +85,87 @@ struct ChatView: View {
         }
     }
 
+    /// Placeholder view shown when chat is empty
     private var emptyStateView: some View {
         Text("Chat will appear here...")
             .foregroundColor(Color(.secondaryLabel))
             .padding(.top, DesignSystem.Spacing.xl)
     }
 
+    // MARK: - Message Views
+
+    /// Renders the appropriate view for a given message based on its role
+    /// - Parameter message: The message to display
+    /// - Returns: A view representing the message (bubble, ad card, etc.)
     @ViewBuilder
     private func messageView(for message: Message) -> some View {
         switch message.role {
         case .user, .ai:
             MessageBubbleView(message: message)
+
         case .ad:
-            if let ad = message.ad {
-                CeedAdsActionCardView(ad: ad, requestId: message.requestId)
-                    .padding(.horizontal)
-            } else {
-                EmptyView()
-            }
+            adView(for: message)
         }
     }
 
+    /// Renders an ad view for ad-type messages
+    /// - Parameter message: The message containing ad data
+    /// - Returns: A CeedAdsView or EmptyView if no ad data exists
+    @ViewBuilder
+    private func adView(for message: Message) -> some View {
+        if let ad = message.ad {
+            CeedAdsView(
+                ad: ad,
+                requestId: message.requestId,
+                onLeadGenSubmit: { email in
+                    print("[CeedAdsIOSSample] Lead submitted: \(email)")
+                },
+                onFollowupOptionSelected: { option in
+                    print("[CeedAdsIOSSample] Option selected: \(option.label)")
+                }
+            )
+            .padding(.horizontal)
+        } else {
+            EmptyView()
+        }
+    }
+
+    // MARK: - Input Bar
+
+    /// Text input field and send button
     private var inputBar: some View {
         HStack(spacing: DesignSystem.Spacing.md) {
-            TextField("Type a message...", text: $viewModel.inputText)
-                .textFieldStyle(.roundedBorder)
-                .onSubmit {
-                    viewModel.sendMessage()
-                }
-
-            Button(action: viewModel.sendMessage) {
-                Image(systemName: "paperplane.fill")
-                    .foregroundColor(.white)
-                    .padding(DesignSystem.Size.sendButtonPadding)
-                    .background(viewModel.inputText.isEmpty ? Color.gray : Color.blue)
-                    .clipShape(Circle())
-            }
-            .disabled(viewModel.inputText.isEmpty)
+            textField
+            sendButton
         }
         .padding()
     }
 
+    /// Text field for message input
+    private var textField: some View {
+        TextField("Type a message...", text: $viewModel.inputText)
+            .textFieldStyle(.roundedBorder)
+            .onSubmit {
+                viewModel.sendMessage()
+            }
+    }
+
+    /// Circular send button
+    private var sendButton: some View {
+        Button(action: viewModel.sendMessage) {
+            Image(systemName: "paperplane.fill")
+                .foregroundColor(.white)
+                .padding(DesignSystem.Size.sendButtonPadding)
+                .background(viewModel.inputText.isEmpty ? Color.gray : Color.blue)
+                .clipShape(Circle())
+        }
+        .disabled(viewModel.inputText.isEmpty)
+    }
+
     // MARK: - Helpers
 
+    /// Scrolls the message list to show the latest message
+    /// - Parameter proxy: The ScrollViewProxy for programmatic scrolling
     private func scrollToBottom(proxy: ScrollViewProxy) {
         if let lastMessage = viewModel.messages.last {
             withAnimation {
@@ -117,6 +174,8 @@ struct ChatView: View {
         }
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     NavigationStack {
