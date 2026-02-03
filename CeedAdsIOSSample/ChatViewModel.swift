@@ -271,8 +271,7 @@ final class ChatViewModel {
     /// | `[.followup]`       | Only engagement cards with options    |
     /// | `[.actionCard, .leadGen]` | Multiple formats allowed        |
     ///
-    /// - Note: Currently, the SDK does not filter by formats server-side.
-    ///   This parameter is prepared for future SDK enhancement.
+    /// - Note: The SDK now supports formats parameter server-side filtering.
     private func requestAd(
         conversationId: String,
         messageId: String,
@@ -290,18 +289,11 @@ final class ChatViewModel {
 
         Task {
             do {
-                // NOTE: When SDK adds formats support, update this call:
-                // let (ad, requestId) = try await CeedAdsSDK.requestAd(
-                //     conversationId: conversationId,
-                //     messageId: messageId,
-                //     contextText: contextText,
-                //     formats: formats
-                // )
-
                 let (ad, requestId) = try await CeedAdsSDK.requestAd(
                     conversationId: conversationId,
                     messageId: messageId,
-                    contextText: contextText
+                    contextText: contextText,
+                    formats: formats
                 )
                 await MainActor.run {
                     completion(ad, requestId)
